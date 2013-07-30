@@ -1,0 +1,10 @@
+C:\Users\user\Desktop\Re Smart Tagger\bin\Debug\SpellChecker.pkgdef
+C:\Users\user\Desktop\Re Smart Tagger\bin\Debug\source.extension.vsixmanifest
+C:\Users\user\Desktop\Re Smart Tagger\bin\Debug\ReSmartChecker.dll
+C:\Users\user\Desktop\Re Smart Tagger\bin\Debug\ReSmartChecker.pdb
+C:\Users\user\Desktop\Re Smart Tagger\bin\Debug\ReSmartChecker.vsix
+C:\Users\user\Desktop\Re Smart Tagger\bin\Debug\extension.vsixmanifest
+C:\Users\user\Desktop\Re Smart Tagger\obj\Debug\ReSmartChecker.csprojResolveAssemblyReference.cache
+C:\Users\user\Desktop\Re Smart Tagger\obj\Debug\ReSmartChecker.dll
+C:\Users\user\Desktop\Re Smart Tagger\obj\Debug\ReSmartChecker.pdb
+C:\Users\user\Desktop\Re Smart Tagger\obj\Debug\extension.vsixmanifest
