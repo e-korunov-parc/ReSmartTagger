@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -9,7 +10,7 @@ using Microsoft.VisualStudio.Utilities;
 namespace SpellChecker
 {
     [Export(typeof(IViewTaggerProvider))]
-    [ContentType("text")]
+    [ContentType("csharp")]
     [Order(Before = "default")]
     [TagType(typeof(SmartTag))]
     internal class ReSmartTaggerProvider : IViewTaggerProvider

@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
+using ReSmartChecker.SmartTagActions;
 using SpellChecker.SmartTagActions;
 
 namespace SpellChecker
@@ -82,6 +83,7 @@ namespace SpellChecker
             ITrackingSpan trackingSpan = span.Snapshot.CreateTrackingSpan(span, SpanTrackingMode.EdgeInclusive);
 
             actionList.Add(new UpperCaseSmartTagAction(trackingSpan));
+            actionList.Add(new RenameSmartTagAction(trackingSpan));
 
             SmartTagActionSet actionSet = new SmartTagActionSet(actionList.AsReadOnly());
             actionSetList.Add(actionSet);

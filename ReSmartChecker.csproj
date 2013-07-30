@@ -102,6 +102,8 @@
     <Compile Include="ReSmartTag.cs" />
     <Compile Include="ReSmartTagger.cs" />
     <Compile Include="ReSmartTaggerProvider.cs" />
+    <Compile Include="SmartTagActions\BaseSmartTagAction.cs" />
+    <Compile Include="SmartTagActions\RenameSmartTagAction.cs" />
     <Compile Include="SmartTagActions\UpperCaseSmartTagAction.cs" />
   </ItemGroup>
   <ItemGroup>

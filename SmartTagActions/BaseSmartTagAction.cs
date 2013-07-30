@@ -3,14 +3,14 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 
-namespace SpellChecker.SmartTagActions
+namespace ReSmartChecker.SmartTagActions
 {
-    internal class UpperCaseSmartTagAction : ISmartTagAction
+    internal abstract class BaseSmartTagAction : ISmartTagAction
     {
-        private ITrackingSpan _span;
-        private string _upper;
-        private string _display;
-        private ITextSnapshot _snapshot;
+        protected ITrackingSpan _span;
+        protected string _display;
+        protected ITextSnapshot _snapshot;
+        protected string _spanText;
 
         public string DisplayText
         {
@@ -36,17 +36,14 @@ namespace SpellChecker.SmartTagActions
             get { return null; }
         }
 
-        public UpperCaseSmartTagAction(ITrackingSpan span)
+        public BaseSmartTagAction(ITrackingSpan span, string display = "")
         {
             _span = span;
             _snapshot = span.TextBuffer.CurrentSnapshot;
-            _upper = span.GetText(_snapshot).ToUpper();
-            _display = "Преобразовать в заглавные буквы";
+            _spanText = span.GetText(_snapshot);
+            _display = display;
         }
 
-        public void Invoke()
-        {
-            _span.TextBuffer.Replace(_span.GetSpan(_snapshot), _upper);
-        }
+        public abstract void Invoke();
     }
 }
