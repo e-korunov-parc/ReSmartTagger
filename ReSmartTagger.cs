@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -68,6 +69,9 @@ namespace SpellChecker
                     yield break;
 
                 TextExtent extent = navigator.GetExtentOfWord(point);
+                var classification = _provider.Classification.GetClassificationType("");
+                var cs = new ClassificationSpan(span, classification);
+
                 //don't display the tag if the extent has whitespace
                 if (extent.IsSignificant)
                     yield return new TagSpan<ReSmartTag>(extent.Span, new ReSmartTag(GetSmartTagActions(extent.Span)));
