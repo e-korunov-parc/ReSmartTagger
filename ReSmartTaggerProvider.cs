@@ -32,39 +32,39 @@ namespace SpellChecker
             }
 
             // TODO : Походу так можно получить класификаторы
-            var classifer = AggregatorService.GetClassifier(buffer);
+
             //classifer.GetClassificationSpans();
             //make sure we are tagging only the top buffer
 
-            {
-                //                internal
-                // OokClassifier(ITextBuffer
-                // buffer, ITagAggregator<OokTokenTag>
-                // ookTagAggregator, IClassificationTypeRegistryService
-                // typeService)
+            //                internal
+            // OokClassifier(ITextBuffer
+            // buffer, ITagAggregator<OokTokenTag>
+            // ookTagAggregator, IClassificationTypeRegistryService
+            // typeService)
 
-                //{
-                //   _buffer = buffer;
+            //{
+            //   _buffer = buffer;
 
-                //   _aggregator = ookTagAggregator;
+            //   _aggregator = ookTagAggregator;
 
-                //   _ookTypes = newDictionary<OokTokenTypes,
-                //IClassificationType>();
-                //   _ookTypes[OokTokenTypes.OokExclaimation]
-                // = typeService.GetClassificationType(PredefinedClassificationTypeNames.Comment);
+            //   _ookTypes = newDictionary<OokTokenTypes,
+            //   IClassificationType>();
+            //   _ookTypes[OokTokenTypes.OokExclaimation]
+            // = typeService.GetClassificationType(PredefinedClassificationTypeNames.Comment);
 
-                //   _ookTypes[OokTokenTypes.OokPeriod]
-                // = typeService.GetClassificationType(PredefinedClassificationTypeNames.Literal);
+            //   _ookTypes[OokTokenTypes.OokPeriod]
+            // = typeService.GetClassificationType(PredefinedClassificationTypeNames.Literal);
 
-                //   _ookTypes[OokTokenTypes.OokQuestion]
-                // = typeService.GetClassificationType(PredefinedClassificationTypeNames.Keyword);
+            //   _ookTypes[OokTokenTypes.OokQuestion]
+            // = typeService.GetClassificationType(PredefinedClassificationTypeNames.Keyword);
 
-                //}
-            }
+            //}
+
+            var classifier = AggregatorService.GetClassifier(buffer);
 
             if (buffer == textView.TextBuffer)
             {
-                return new ReSmartTagger(buffer, textView, this) as ITagger<T>;
+                return new ReSmartTagger(buffer, textView, this, classifier) as ITagger<T>;
             }
             else return null;
         }

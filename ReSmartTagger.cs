@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using ReSmartChecker.SmartTagActions;
 using SpellChecker.SmartTagActions;
+using System.Linq;
 
 namespace SpellChecker
 {
@@ -20,13 +21,15 @@ namespace SpellChecker
         private ITextView _view;
         private ReSmartTaggerProvider _provider;
         private bool _disposed;
+        private IClassifier _classifier;
 
-        public ReSmartTagger(ITextBuffer buffer, ITextView view, ReSmartTaggerProvider provider)
+        public ReSmartTagger(ITextBuffer buffer, ITextView view, ReSmartTaggerProvider provider, IClassifier classifier)
         {
             _buffer = buffer;
             _view = view;
             _provider = provider;
             _view.LayoutChanged += OnLayoutChanged;
+            _classifier = classifier;
         }
 
         public void Dispose()
@@ -60,22 +63,43 @@ namespace SpellChecker
 
             foreach (var span in spans)
             {
-                ITextCaret caret = _view.Caret;
-                SnapshotPoint point;
+                if (_classifier != null)
+                {
+                    var listClassifier = _classifier.GetClassificationSpans(span);
 
-                if (caret.Position.BufferPosition > 0)
-                    point = caret.Position.BufferPosition - 1;
+                    if (listClassifier != null)
+                    {
+                        ITextCaret caret = _view.Caret;
+                        SnapshotPoint point;
+
+                        //var asd = _view.Caret.Position.Point.GetPoint(_buffer, _view.Caret.Position.Affinity);
+                        //if (asd.HasValue)
+                        //{
+                        //    var zxc = navigator.GetExtentOfWord(asd.Value);
+                        //}
+
+                        if (caret.Position.BufferPosition > 0)
+                            point = caret.Position.BufferPosition - 1;
+                        else
+                            yield break;
+
+                        var targetSpan = listClassifier.FirstOrDefault(item => item.ClassificationType.Classification == "identifier"
+                                                                               && item.Span.Start <= point.Position
+                                                                               && item.Span.End >= point.Position);
+                        if (targetSpan != null)
+                            yield return new TagSpan<ReSmartTag>(targetSpan.Span, new ReSmartTag(GetSmartTagActions(targetSpan.Span)));
+                        else yield break;
+
+                        //TextExtent extent = navigator.GetExtentOfWord(point);
+
+                        //don't display the tag if the extent has whitespace
+                        //if (extent.IsSignificant)
+                        //    yield return new TagSpan<ReSmartTag>(extent.Span, new ReSmartTag(GetSmartTagActions(extent.Span)));
+                        //else yield break;
+                    }
+                }
                 else
                     yield break;
-
-                TextExtent extent = navigator.GetExtentOfWord(point);
-                var classification = _provider.Classification.GetClassificationType("");
-                var cs = new ClassificationSpan(span, classification);
-
-                //don't display the tag if the extent has whitespace
-                if (extent.IsSignificant)
-                    yield return new TagSpan<ReSmartTag>(extent.Span, new ReSmartTag(GetSmartTagActions(extent.Span)));
-                else yield break;
             }
         }
 

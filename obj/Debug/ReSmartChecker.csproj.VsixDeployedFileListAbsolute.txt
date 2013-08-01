@@ -1,4 +1,0 @@
-C:\Users\user\AppData\Local\Microsoft\VisualStudio\11.0Exp\Extensions\Roman Golovin and Noah Richards\Re Smart Checker\1.0\\ReSmartChecker.dll
-C:\Users\user\AppData\Local\Microsoft\VisualStudio\11.0Exp\Extensions\Roman Golovin and Noah Richards\Re Smart Checker\1.0\\extension.vsixmanifest
-C:\Users\user\AppData\Local\Microsoft\VisualStudio\11.0Exp\Extensions\Roman Golovin and Noah Richards\Re Smart Checker\1.0\\SpellChecker.pkgdef
-C:\Users\user\AppData\Local\Microsoft\VisualStudio\11.0Exp\Extensions\Roman Golovin and Noah Richards\Re Smart Checker\1.0\\ReSmartChecker.pdb

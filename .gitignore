@@ -40,5 +40,3 @@ SecondSelloby.Workers.UpdatePartnerWallets/SecondSelloby.Workers.UpdatePartnerWa
 SecondSelloby.Workers.UpdateStatisticForPartners/SecondSelloby.Workers.UpdateStatisticForPartners.exe.licenses
 SecondSelloby.Workers.UsingAdServicesUpdater/SecondSelloby.Workers.UsingProductServicesUpdater.exe.licenses
 /SecondSelloby/Static/partnerbanner
-obj*
-bin/*
