@@ -72,30 +72,23 @@ namespace SpellChecker
                         ITextCaret caret = _view.Caret;
                         SnapshotPoint point;
 
-                        //var asd = _view.Caret.Position.Point.GetPoint(_buffer, _view.Caret.Position.Affinity);
-                        //if (asd.HasValue)
-                        //{
-                        //    var zxc = navigator.GetExtentOfWord(asd.Value);
-                        //}
-
                         if (caret.Position.BufferPosition > 0)
                             point = caret.Position.BufferPosition - 1;
                         else
                             yield break;
 
-                        var targetSpan = listClassifier.FirstOrDefault(item => item.ClassificationType.Classification == "identifier"
-                                                                               && item.Span.Start <= point.Position
-                                                                               && item.Span.End >= point.Position);
+                        var groupClassifications = listClassifier.GroupBy(item => item.ClassificationType.Classification,
+                                                                                  item => item.Span.GetText(),
+                                                                                  (key, type) => new KeyValuePair<string, IEnumerable<string>>(key, type));
+
+                        var targetSpan = listClassifier.FirstOrDefault(item => item.Span.Start <= point.Position
+                                                                               && item.Span.End >= point.Position
+                                                                               && (item.ClassificationType.Classification == "identifier"
+                                                                               && !groupClassifications.Any(i => i.Key == "keyword" && i.Value.Any(a => a == item.Span.GetText()))));
+
                         if (targetSpan != null)
                             yield return new TagSpan<ReSmartTag>(targetSpan.Span, new ReSmartTag(GetSmartTagActions(targetSpan.Span)));
                         else yield break;
-
-                        //TextExtent extent = navigator.GetExtentOfWord(point);
-
-                        //don't display the tag if the extent has whitespace
-                        //if (extent.IsSignificant)
-                        //    yield return new TagSpan<ReSmartTag>(extent.Span, new ReSmartTag(GetSmartTagActions(extent.Span)));
-                        //else yield break;
                     }
                 }
                 else
