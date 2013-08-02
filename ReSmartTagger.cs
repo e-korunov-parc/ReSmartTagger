@@ -30,6 +30,14 @@ namespace SpellChecker
             _provider = provider;
             _view.LayoutChanged += OnLayoutChanged;
             _classifier = classifier;
+            _view.Caret.PositionChanged += Caret_PositionChanged;
+        }
+
+        private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
+        {
+            var tempEvent = TagsChanged;
+            if (tempEvent != null)
+                tempEvent(this, new SnapshotSpanEventArgs(new SnapshotSpan(_buffer.CurrentSnapshot, 0, _buffer.CurrentSnapshot.Length)));
         }
 
         public void Dispose()
@@ -85,7 +93,6 @@ namespace SpellChecker
                                                                                && item.Span.End >= point.Position
                                                                                && (item.ClassificationType.Classification == "identifier"
                                                                                && !groupClassifications.Any(i => i.Key == "keyword" && i.Value.Any(a => a == item.Span.GetText()))));
-
                         if (targetSpan != null)
                             yield return new TagSpan<ReSmartTag>(targetSpan.Span, new ReSmartTag(GetSmartTagActions(targetSpan.Span)));
                         else yield break;
@@ -118,10 +125,9 @@ namespace SpellChecker
             if (!snapshot.GetText().ToLower().Equals(e.OldSnapshot.GetText().ToLower()))
             {
                 SnapshotSpan span = new SnapshotSpan(snapshot, new Span(0, snapshot.Length));
-                EventHandler<SnapshotSpanEventArgs> handler = this.TagsChanged;
-                if (handler != null)
+                if (this.TagsChanged != null)
                 {
-                    handler(this, new SnapshotSpanEventArgs(span));
+                    this.TagsChanged(this, new SnapshotSpanEventArgs(span));
                 }
             }
         }

@@ -11,7 +11,6 @@ namespace SpellChecker
 {
     [Export(typeof(IViewTaggerProvider))]
     [ContentType("csharp")]
-    [Order(Before = "default")]
     [TagType(typeof(SmartTag))]
     internal class ReSmartTaggerProvider : IViewTaggerProvider
     {
@@ -30,35 +29,6 @@ namespace SpellChecker
             {
                 return null;
             }
-
-            // TODO : Походу так можно получить класификаторы
-
-            //classifer.GetClassificationSpans();
-            //make sure we are tagging only the top buffer
-
-            //                internal
-            // OokClassifier(ITextBuffer
-            // buffer, ITagAggregator<OokTokenTag>
-            // ookTagAggregator, IClassificationTypeRegistryService
-            // typeService)
-
-            //{
-            //   _buffer = buffer;
-
-            //   _aggregator = ookTagAggregator;
-
-            //   _ookTypes = newDictionary<OokTokenTypes,
-            //   IClassificationType>();
-            //   _ookTypes[OokTokenTypes.OokExclaimation]
-            // = typeService.GetClassificationType(PredefinedClassificationTypeNames.Comment);
-
-            //   _ookTypes[OokTokenTypes.OokPeriod]
-            // = typeService.GetClassificationType(PredefinedClassificationTypeNames.Literal);
-
-            //   _ookTypes[OokTokenTypes.OokQuestion]
-            // = typeService.GetClassificationType(PredefinedClassificationTypeNames.Keyword);
-
-            //}
 
             var classifier = AggregatorService.GetClassifier(buffer);
 
