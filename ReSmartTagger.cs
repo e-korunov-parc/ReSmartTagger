@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -128,8 +130,9 @@ namespace SpellChecker
                 var s = sessions.FirstOrDefault();
                 if (s != null)
                 {
+                    IsIntersectedWithSmartTag(_view);
                     s.State = SmartTagState.Intermediate;
-                    s.IconSource = Icon;
+                    //s.IconSource = Icon;
                     //ITextSnapshot snapshot2 = _buffer.CurrentSnapshot;
                     //SnapshotPoint? caretPoint = _view.Caret.Position.Point.GetPoint(snapshot, PositionAffinity.Successor);
                     //ITrackingPoint triggerPoint = snapshot.CreateTrackingPoint(caretPoint.Value, PointTrackingMode.Positive);
@@ -139,6 +142,36 @@ namespace SpellChecker
                 }
                 if (true) { }
             }
+        }
+
+        private bool IsIntersectedWithSmartTag(ITextView view)
+        {
+            foreach (ISmartTagSession s in _broke.GetSessions(view))
+            {
+                var wpfTextView = (IWpfTextView)view;
+
+                var spaceReservationManager = wpfTextView.GetSpaceReservationManager("smarttag");
+                var adornmentLayer = wpfTextView.GetAdornmentLayer("SmartTag");
+
+                //adornmentLayer.RemoveAllAdornments();
+                //Canvas.SetLeft(, _view.ViewportRight - 255);
+                //Canvas.SetTop(, _view.ViewportTop + 10);
+                //wpfTextView.VisualElement.Margin
+
+                foreach (var alement in adornmentLayer.Elements)
+                {
+                    var but = new Button();
+                    but.Content = "hello";
+                    adornmentLayer.RemoveAllAdornments();
+                    adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, alement.VisualSpan, null, but, null);
+
+                    //alement.Adornment alement.Adornment.PointToScreen(new Point(0, 0));
+                    //if (rect.Contains(alement.Adornment.PointToScreen(new Point(0, 0))))
+                    //    return true;
+                }
+            }
+
+            return false;
         }
 
         private ReadOnlyCollection<SmartTagActionSet> GetSmartTagActions(SnapshotSpan span)

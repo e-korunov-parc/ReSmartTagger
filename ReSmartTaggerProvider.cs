@@ -35,11 +35,6 @@ namespace SpellChecker
                 return null;
             }
 
-            var propKey = typeof(ISmartTagBroker);
-
-            if (!textView.Properties.ContainsProperty(propKey) && SmartTagBroker != null)
-                textView.Properties.AddProperty(propKey, SmartTagBroker);
-
             var classifier = AggregatorService.GetClassifier(buffer);
 
             if (buffer == textView.TextBuffer)
@@ -48,26 +43,5 @@ namespace SpellChecker
             }
             else return null;
         }
-
-        //private static bool IsIntersectedWithSmartTag(ITextView view)
-        //{
-        //    var smartTagBroker = view.GetSmartTagBroker();
-
-        //    if (smartTagBroker != null && smartTagBroker.IsSmartTagActive(textView))
-        //    {
-        //        foreach (ISmartTagSession s in smartTagBroker.GetSessions(textView))
-        //        {
-        //            var wpfTextView = (IWpfTextView)textView;
-        //            var spaceReservationManager = wpfTextView.GetSpaceReservationManager("smarttag");
-        //            var adornmentLayer = wpfTextView.GetAdornmentLayer("SmartTag");
-
-        //            foreach (var alement in adornmentLayer.Elements)
-        //                if (rect.Contains(alement.Adornment.PointToScreen(new Point(0, 0))))
-        //                    return true;
-        //        }
-        //    }
-
-        //    return false;
-        //}
     }
 }
