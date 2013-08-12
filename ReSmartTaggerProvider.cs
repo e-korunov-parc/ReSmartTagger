@@ -40,26 +40,11 @@ namespace SpellChecker
             if (!textView.Properties.ContainsProperty(propKey) && SmartTagBroker != null)
                 textView.Properties.AddProperty(propKey, SmartTagBroker);
 
-            var sessions = SmartTagBroker.GetSessions(textView);
-            if (true) { }
-
-            ITextSnapshot snapshot = buffer.CurrentSnapshot;
-            SnapshotPoint? caretPoint = textView.Caret.Position.Point.GetPoint(snapshot, PositionAffinity.Successor);
-            ITrackingPoint triggerPoint = snapshot.CreateTrackingPoint(caretPoint.Value, PointTrackingMode.Positive);
-            var sessions2 = SmartTagBroker.CreateSmartTagSession(textView, SmartTagType.Factoid, triggerPoint, SmartTagState.Collapsed);
-            sessions2.IconSource = Icon;
-            Global.Session = sessions2;
-            if (true) { }
-
-            //make sure we are tagging only the top buffer
-            //if (buffer == textView.TextBuffer)
-            //    return new NemerleImplementsSmartTagger(buffer, textView, this) as ITagger<T>;
-
             var classifier = AggregatorService.GetClassifier(buffer);
 
             if (buffer == textView.TextBuffer)
             {
-                return new ReSmartTagger(buffer, textView, this, classifier) as ITagger<T>;
+                return new ReSmartTagger(buffer, textView, this, classifier, SmartTagBroker) as ITagger<T>;
             }
             else return null;
         }
@@ -84,14 +69,5 @@ namespace SpellChecker
 
         //    return false;
         //}
-
-        public System.Windows.Media.ImageSource Icon 
-        {
-            get 
-            {
-                BitmapImage img = new BitmapImage(new System.Uri("texticon.png", System.UriKind.Relative));
-                return img;
-            }
-        }
     }
 }

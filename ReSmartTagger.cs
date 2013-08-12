@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
+using System.Windows.Media.Imaging;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
@@ -9,7 +11,6 @@ using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using ReSmartChecker.SmartTagActions;
 using SpellChecker.SmartTagActions;
-using System.Linq;
 
 namespace SpellChecker
 {
@@ -22,8 +23,20 @@ namespace SpellChecker
         private ReSmartTaggerProvider _provider;
         private bool _disposed;
         private IClassifier _classifier;
+        private ISmartTagBroker _broke;
+        private BitmapImage _img = null;
 
-        public ReSmartTagger(ITextBuffer buffer, ITextView view, ReSmartTaggerProvider provider, IClassifier classifier)
+        public System.Windows.Media.ImageSource Icon
+        {
+            get
+            {
+                if (_img == null)
+                    _img = new BitmapImage(new System.Uri("texticon.png", System.UriKind.Relative));
+                return _img;
+            }
+        }
+
+        public ReSmartTagger(ITextBuffer buffer, ITextView view, ReSmartTaggerProvider provider, IClassifier classifier, ISmartTagBroker broke)
         {
             _buffer = buffer;
             _view = view;
@@ -31,6 +44,13 @@ namespace SpellChecker
             _view.LayoutChanged += OnLayoutChanged;
             _classifier = classifier;
             _view.Caret.PositionChanged += Caret_PositionChanged;
+            _broke = broke;
+            this.TagsChanged += ReSmartTagger_TagsChanged;
+        }
+
+        private void ReSmartTagger_TagsChanged(object sender, SnapshotSpanEventArgs e)
+        {
+            if (true) { }
         }
 
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
@@ -100,6 +120,24 @@ namespace SpellChecker
                 }
                 else
                     yield break;
+            }
+
+            var sessions = _broke.GetSessions(_view);
+            if (_broke.IsSmartTagActive(_view))
+            {
+                var s = sessions.FirstOrDefault();
+                if (s != null)
+                {
+                    s.State = SmartTagState.Intermediate;
+                    s.IconSource = Icon;
+                    //ITextSnapshot snapshot2 = _buffer.CurrentSnapshot;
+                    //SnapshotPoint? caretPoint = _view.Caret.Position.Point.GetPoint(snapshot, PositionAffinity.Successor);
+                    //ITrackingPoint triggerPoint = snapshot.CreateTrackingPoint(caretPoint.Value, PointTrackingMode.Positive);
+                    //var sessions2 = _broke.CreateSmartTagSession(_view, SmartTagType.Factoid, triggerPoint, SmartTagState.Intermediate);
+                    //sessions2.ActionSets.Union(sessions2.ActionSets);
+                    //sessions2.IconSource = Icon;
+                }
+                if (true) { }
             }
         }
 
