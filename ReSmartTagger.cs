@@ -149,21 +149,24 @@ namespace SpellChecker
             foreach (ISmartTagSession s in _broke.GetSessions(view))
             {
                 var wpfTextView = (IWpfTextView)view;
-
-                var spaceReservationManager = wpfTextView.GetSpaceReservationManager("smarttag");
+                //var spaceReservationManager = wpfTextView.GetSpaceReservationManager("smarttag");
                 var adornmentLayer = wpfTextView.GetAdornmentLayer("SmartTag");
 
                 //adornmentLayer.RemoveAllAdornments();
                 //Canvas.SetLeft(, _view.ViewportRight - 255);
                 //Canvas.SetTop(, _view.ViewportTop + 10);
                 //wpfTextView.VisualElement.Margin
-
+                //ITextViewLine
                 foreach (var alement in adornmentLayer.Elements)
                 {
+                    var line = view.GetTextViewLineContainingBufferPosition(_view.Caret.Position.BufferPosition);
                     var but = new Button();
-                    but.Content = "hello";
+                    but.Content = "s";
+                    but.Height = 16;
+                    but.Width = 16;
+                    but.Margin = new Thickness(0, line.Top, 0, 0);
                     adornmentLayer.RemoveAllAdornments();
-                    adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, alement.VisualSpan, null, but, null);
+                    adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, alement.VisualSpan, "butRe", but, null);
 
                     //alement.Adornment alement.Adornment.PointToScreen(new Point(0, 0));
                     //if (rect.Contains(alement.Adornment.PointToScreen(new Point(0, 0))))
@@ -192,6 +195,11 @@ namespace SpellChecker
         private void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
             ITextSnapshot snapshot = e.NewSnapshot;
+
+            var wpfTextView = (IWpfTextView)_view;
+            var adornmentLayer = wpfTextView.GetAdornmentLayer("SmartTag");
+            adornmentLayer.RemoveAdornmentsByTag("butRe");
+
             //don't do anything if this is just a change in case
             if (!snapshot.GetText().ToLower().Equals(e.OldSnapshot.GetText().ToLower()))
             {
