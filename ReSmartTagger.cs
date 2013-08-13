@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
+using ReSmartChecker.Controls;
 using ReSmartChecker.SmartTagActions;
 using SpellChecker.SmartTagActions;
 
@@ -159,15 +160,20 @@ namespace SpellChecker
                 //ITextViewLine
                 foreach (var alement in adornmentLayer.Elements)
                 {
-                    var line = view.GetTextViewLineContainingBufferPosition(_view.Caret.Position.BufferPosition);
-                    var but = new Button();
-                    but.Content = "s";
-                    but.Height = 16;
-                    but.Width = 16;
-                    but.Margin = new Thickness(0, line.Top, 0, 0);
                     adornmentLayer.RemoveAllAdornments();
-                    adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, alement.VisualSpan, "butRe", but, null);
 
+                    var line = view.GetTextViewLineContainingBufferPosition(_view.Caret.Position.BufferPosition);
+                    //var but = new Button();
+                    //but.Content = "s";
+                    //but.Height = 16;
+                    //but.Width = 16;
+                    //but.Margin = new Thickness(0, line.Top, 0, 0);
+                    //adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, alement.VisualSpan, "butRe", but, null);
+
+                    var mb = new ReButtonMenu();
+                    mb.Margin = new Thickness(0, line.Top, 0, 0);
+                    adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, alement.VisualSpan, "butRe", mb, null);
+                    
                     //alement.Adornment alement.Adornment.PointToScreen(new Point(0, 0));
                     //if (rect.Contains(alement.Adornment.PointToScreen(new Point(0, 0))))
                     //    return true;
@@ -196,9 +202,9 @@ namespace SpellChecker
         {
             ITextSnapshot snapshot = e.NewSnapshot;
 
-            var wpfTextView = (IWpfTextView)_view;
-            var adornmentLayer = wpfTextView.GetAdornmentLayer("SmartTag");
-            adornmentLayer.RemoveAdornmentsByTag("butRe");
+            //var wpfTextView = (IWpfTextView)_view;
+            //var adornmentLayer = wpfTextView.GetAdornmentLayer("SmartTag");
+            //adornmentLayer.RemoveAdornmentsByTag("butRe");
 
             //don't do anything if this is just a change in case
             if (!snapshot.GetText().ToLower().Equals(e.OldSnapshot.GetText().ToLower()))
