@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Microsoft.VisualStudio.Language.Intellisense;
 using Microsoft.VisualStudio.Text;
@@ -58,9 +57,8 @@ namespace SpellChecker
 
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
         {
-            var tempEvent = TagsChanged;
-            if (tempEvent != null)
-                tempEvent(this, new SnapshotSpanEventArgs(new SnapshotSpan(_buffer.CurrentSnapshot, 0, _buffer.CurrentSnapshot.Length)));
+            if (TagsChanged != null)
+                TagsChanged(this, new SnapshotSpanEventArgs(new SnapshotSpan(_buffer.CurrentSnapshot, 0, _buffer.CurrentSnapshot.Length)));
         }
 
         public void Dispose()
@@ -132,7 +130,6 @@ namespace SpellChecker
                 if (s != null)
                 {
                     IsIntersectedWithSmartTag(_view);
-                    s.State = SmartTagState.Intermediate;
                     //s.IconSource = Icon;
                     //ITextSnapshot snapshot2 = _buffer.CurrentSnapshot;
                     //SnapshotPoint? caretPoint = _view.Caret.Position.Point.GetPoint(snapshot, PositionAffinity.Successor);
@@ -147,37 +144,21 @@ namespace SpellChecker
 
         private bool IsIntersectedWithSmartTag(ITextView view)
         {
+            var wpfTextView = (IWpfTextView)view;
+            var spaceReservationManager = wpfTextView.GetSpaceReservationManager("smarttag");
+            var adornmentLayer = wpfTextView.GetAdornmentLayer("SmartTag");
+
+            foreach (var alement in adornmentLayer.Elements)
+            {
+                adornmentLayer.RemoveAllAdornments();
+
+                var line = view.GetTextViewLineContainingBufferPosition(_view.Caret.Position.BufferPosition);
+                var mb = new ReButtonMenu();
+                mb.Margin = new Thickness(0, line.Top, 0, 0);
+                adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, alement.VisualSpan, "butRe", mb, null);
+            }
             foreach (ISmartTagSession s in _broke.GetSessions(view))
             {
-                var wpfTextView = (IWpfTextView)view;
-                //var spaceReservationManager = wpfTextView.GetSpaceReservationManager("smarttag");
-                var adornmentLayer = wpfTextView.GetAdornmentLayer("SmartTag");
-
-                //adornmentLayer.RemoveAllAdornments();
-                //Canvas.SetLeft(, _view.ViewportRight - 255);
-                //Canvas.SetTop(, _view.ViewportTop + 10);
-                //wpfTextView.VisualElement.Margin
-                //ITextViewLine
-                foreach (var alement in adornmentLayer.Elements)
-                {
-                    adornmentLayer.RemoveAllAdornments();
-
-                    var line = view.GetTextViewLineContainingBufferPosition(_view.Caret.Position.BufferPosition);
-                    //var but = new Button();
-                    //but.Content = "s";
-                    //but.Height = 16;
-                    //but.Width = 16;
-                    //but.Margin = new Thickness(0, line.Top, 0, 0);
-                    //adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, alement.VisualSpan, "butRe", but, null);
-
-                    var mb = new ReButtonMenu();
-                    mb.Margin = new Thickness(0, line.Top, 0, 0);
-                    adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, alement.VisualSpan, "butRe", mb, null);
-                    
-                    //alement.Adornment alement.Adornment.PointToScreen(new Point(0, 0));
-                    //if (rect.Contains(alement.Adornment.PointToScreen(new Point(0, 0))))
-                    //    return true;
-                }
             }
 
             return false;

@@ -1,21 +1,35 @@
 ﻿<UserControl x:Class="ReSmartChecker.Controls.ReButtonMenu"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
              MinHeight="16" MinWidth="16">
     <Grid x:Name="ReGrid" MinHeight="16" MinWidth="16">
         <StackPanel Orientation="Horizontal">
-            <Image Source="/Icons/texticon.png" Width="16" Height="16"  />
-            <TextBlock x:Name="ReBox" Text="Hello"  />            
-            <Menu x:Name="ReMenu" >
-                <MenuItem >
-                    <MenuItem.Icon>                        
-                        <Image Source="/Icons/texticon.png" Width="16" Height="16" />
-                    </MenuItem.Icon>
-                    <MenuItem Header="Hello menu 1"/>
-                    <MenuItem Header="Hello menu 2" >
+            <!--StrokeThickness="1"
+            RenderOptions.EdgeMode="Aliased"
+                             StrokeDashArray="1 2"-->
+
+            <Menu x:Name="ReMenu" Background="Transparent">
+                <MenuItem>
+                    <MenuItem.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <TextBlock />
+                            </Grid>
+                        </DataTemplate>
+                    </MenuItem.ItemTemplate>
+                    <MenuItem.Header>
+                        <Ellipse Width="16"
+                     Fill="DarkBlue"
+                     Stroke="LightBlue"
+                     StrokeThickness="4"
+                     Height="16"
+                     Stretch="Fill" />
+                    </MenuItem.Header>
+                    <MenuItem Header="Hello menu 1" />
+                    <MenuItem Header="Hello menu 2">
                         <MenuItem.Icon>
                             <Image x:Name="img" Source="/Icons/texticon.png" Width="16" Height="16" />
                         </MenuItem.Icon>
