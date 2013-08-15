@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
+using ReSmartChecker.Providers;
 
 namespace SpellChecker
 {
@@ -25,6 +26,9 @@ namespace SpellChecker
 
         [Import]
         internal ISmartTagBroker SmartTagBroker { get; set; }
+
+        [Import]
+        internal IWpfKeyboardTrackingService KS { get; set; }
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {

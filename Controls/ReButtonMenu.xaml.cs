@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using ReSmartChecker.Providers;
 
 namespace ReSmartChecker.Controls
 {
@@ -12,6 +13,22 @@ namespace ReSmartChecker.Controls
         public ReButtonMenu()
         {
             InitializeComponent();
+            Loaded += ReButtonMenu_Loaded;
+            Unloaded += ReButtonMenu_Unloaded;
+        }
+
+        private void ReButtonMenu_Loaded(object sender, System.Windows.RoutedEventArgs e)
+        {
+            ReButtonKeyProc.KeyDownEvent += ReButtonKeyProc_KeyDownEvent;
+        }
+
+        private void ReButtonKeyProc_KeyDownEvent(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            RootItem.IsSubmenuOpen = true;
+        }
+
+        private void ReButtonMenu_Unloaded(object sender, System.Windows.RoutedEventArgs e)
+        {
         }
 
         public void CreateMenu(System.Collections.ObjectModel.ReadOnlyCollection<Microsoft.VisualStudio.Language.Intellisense.SmartTagActionSet> _smartTagActionSets)
