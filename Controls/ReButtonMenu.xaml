@@ -12,14 +12,7 @@
                              StrokeDashArray="1 2"-->
 
             <Menu x:Name="ReMenu" Background="Transparent">
-                <MenuItem>
-                    <MenuItem.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <TextBlock />
-                            </Grid>
-                        </DataTemplate>
-                    </MenuItem.ItemTemplate>
+                <MenuItem x:Name="RootItem">
                     <MenuItem.Header>
                         <Ellipse Width="16"
                      Fill="DarkBlue"
@@ -29,11 +22,7 @@
                      Stretch="Fill" />
                     </MenuItem.Header>
                     <MenuItem Header="Hello menu 1" />
-                    <MenuItem Header="Hello menu 2">
-                        <MenuItem.Icon>
-                            <Image x:Name="img" Source="/Icons/texticon.png" Width="16" Height="16" />
-                        </MenuItem.Icon>
-                    </MenuItem>
+                    <MenuItem Header="Hello menu 2" />
                 </MenuItem>
             </Menu>
         </StackPanel>

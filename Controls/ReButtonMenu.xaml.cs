@@ -1,16 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows.Controls;
 
 namespace ReSmartChecker.Controls
 {
@@ -19,9 +7,25 @@ namespace ReSmartChecker.Controls
     /// </summary>
     public partial class ReButtonMenu : UserControl
     {
+        public readonly string TAG_BUTTON = "ReButtonMenuControl";
+
         public ReButtonMenu()
         {
             InitializeComponent();
+        }
+
+        public void CreateMenu(System.Collections.ObjectModel.ReadOnlyCollection<Microsoft.VisualStudio.Language.Intellisense.SmartTagActionSet> _smartTagActionSets)
+        {
+            RootItem.Items.Clear();
+            foreach (var item in _smartTagActionSets)
+            {
+                foreach (var item2 in item.Actions)
+                {
+                    var mi = new MenuItem() { Header = item2.DisplayText, Tag = item2 };
+                    mi.Click += (s, e) => item2.Invoke();
+                    RootItem.Items.Add(mi);
+                }
+            }
         }
     }
 }

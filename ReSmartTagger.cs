@@ -27,6 +27,7 @@ namespace SpellChecker
         private IClassifier _classifier;
         private ISmartTagBroker _broke;
         private BitmapImage _img = null;
+        private ReButtonMenu _reButtonMenu = null;
 
         public System.Windows.Media.ImageSource Icon
         {
@@ -48,11 +49,13 @@ namespace SpellChecker
             _view.Caret.PositionChanged += Caret_PositionChanged;
             _broke = broke;
             this.TagsChanged += ReSmartTagger_TagsChanged;
+
+            CreateRebutton(_view);
         }
 
         private void ReSmartTagger_TagsChanged(object sender, SnapshotSpanEventArgs e)
         {
-            if (true) { }
+            RemoveReButton();
         }
 
         private void Caret_PositionChanged(object sender, CaretPositionChangedEventArgs e)
@@ -102,7 +105,8 @@ namespace SpellChecker
                         SnapshotPoint point;
 
                         if (caret.Position.BufferPosition > 0)
-                            point = caret.Position.BufferPosition - 1;
+                            //point = caret.Position.BufferPosition - 1;
+                            point = caret.Position.BufferPosition;
                         else
                             yield break;
 
@@ -114,54 +118,101 @@ namespace SpellChecker
                                                                                && item.Span.End >= point.Position
                                                                                && (item.ClassificationType.Classification == "identifier"
                                                                                && !groupClassifications.Any(i => i.Key == "keyword" && i.Value.Any(a => a == item.Span.GetText()))));
+                        //if (targetSpan != null)
+                        //    yield return new TagSpan<ReSmartTag>(targetSpan.Span, new ReSmartTag(GetSmartTagActions(targetSpan.Span)));
+                        //else yield break;
                         if (targetSpan != null)
-                            yield return new TagSpan<ReSmartTag>(targetSpan.Span, new ReSmartTag(GetSmartTagActions(targetSpan.Span)));
-                        else yield break;
+                        {
+                            _span = targetSpan.Span;
+                            _smartTagActionSets = GetSmartTagActions(_span.Value);
+                        }
+                        else
+                        {
+                            _span = null;
+                            _smartTagActionSets = null;
+                        }
                     }
                 }
                 else
                     yield break;
             }
 
-            var sessions = _broke.GetSessions(_view);
-            if (_broke.IsSmartTagActive(_view))
+            UpdateAdornmentLayer();
+            yield break;
+        }
+
+        private SnapshotSpan? _span;
+        private ReadOnlyCollection<SmartTagActionSet> _smartTagActionSets = null;
+
+        private void UpdateAdornmentLayer()
+        {
+            if (_span != null)
+                InsertReButton(_view);
+        }
+
+        private void CreateRebutton(ITextView view)
+        {
+            _reButtonMenu = new ReButtonMenu();
+            _reButtonMenu.Margin = new Thickness(0);
+        }
+
+        private void UpdateReButton(ITextView view)
+        {
+            var wpfTextView = (IWpfTextView)view;
+            var line = view.GetTextViewLineContainingBufferPosition(_view.Caret.Position.BufferPosition);
+            if (_reButtonMenu == null)
+                _reButtonMenu = new ReButtonMenu();
+            _reButtonMenu.Margin = new Thickness(0, line.Top, 0, 0);
+        }
+
+        private void InsertReButton(ITextView view)
+        {
+            UpdateReButton(view);
+            var adornmentLayer = (view as IWpfTextView).GetAdornmentLayer("SmartTag");
+            if (!adornmentLayer.Elements.Any(item => item.Tag == _reButtonMenu.TAG_BUTTON))
             {
-                var s = sessions.FirstOrDefault();
-                if (s != null)
+                //var visualSpan = adornmentLayer.Elements.FirstOrDefault().VisualSpan;
+                //adornmentLayer.RemoveAllAdornments();
+                if (_span != null)
                 {
-                    IsIntersectedWithSmartTag(_view);
-                    //s.IconSource = Icon;
-                    //ITextSnapshot snapshot2 = _buffer.CurrentSnapshot;
-                    //SnapshotPoint? caretPoint = _view.Caret.Position.Point.GetPoint(snapshot, PositionAffinity.Successor);
-                    //ITrackingPoint triggerPoint = snapshot.CreateTrackingPoint(caretPoint.Value, PointTrackingMode.Positive);
-                    //var sessions2 = _broke.CreateSmartTagSession(_view, SmartTagType.Factoid, triggerPoint, SmartTagState.Intermediate);
-                    //sessions2.ActionSets.Union(sessions2.ActionSets);
-                    //sessions2.IconSource = Icon;
+                    var visualSpan = _span;
+                    HideSmartTags(view);
+                    adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, visualSpan, _reButtonMenu.TAG_BUTTON, _reButtonMenu, null);
                 }
-                if (true) { }
+            }
+            else
+            {
+                HideSmartTags(view);
+                _reButtonMenu.Visibility = Visibility.Visible;
+                _reButtonMenu.CreateMenu(_smartTagActionSets);
+                //var elems = adornmentLayer.Elements.Where(item => item.Tag != _reButtonMenu.TAG_BUTTON);
+                //foreach (var item in elems)
+                //{
+                //    item.Adornment.Visibility = Visibility.Hidden;
+                //}
+                //adornmentLayer.RemoveAdornmentsByTag(item.Tag);
             }
         }
 
-        private bool IsIntersectedWithSmartTag(ITextView view)
+        private void HideSmartTags(ITextView view)
         {
-            var wpfTextView = (IWpfTextView)view;
-            var spaceReservationManager = wpfTextView.GetSpaceReservationManager("smarttag");
-            var adornmentLayer = wpfTextView.GetAdornmentLayer("SmartTag");
-
-            foreach (var alement in adornmentLayer.Elements)
+            var adornmentLayer = (view as IWpfTextView).GetAdornmentLayer("SmartTag");
+            var elems = adornmentLayer.Elements.Where(item => item.Tag != _reButtonMenu.TAG_BUTTON);
+            foreach (var item in elems)
             {
-                adornmentLayer.RemoveAllAdornments();
-
-                var line = view.GetTextViewLineContainingBufferPosition(_view.Caret.Position.BufferPosition);
-                var mb = new ReButtonMenu();
-                mb.Margin = new Thickness(0, line.Top, 0, 0);
-                adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, alement.VisualSpan, "butRe", mb, null);
+                item.Adornment.Visibility = Visibility.Hidden;
             }
-            foreach (ISmartTagSession s in _broke.GetSessions(view))
+        }
+
+        private void RemoveReButton()
+        {
+            if (_reButtonMenu != null)
             {
+                _reButtonMenu.Visibility = Visibility.Hidden;
+                //var wpfTextView = (IWpfTextView)_view;
+                //var adornmentLayer = wpfTextView.GetAdornmentLayer("SmartTag");
+                //adornmentLayer.RemoveAdornmentsByTag(_reButtonMenu.TAG_BUTTON);
             }
-
-            return false;
         }
 
         private ReadOnlyCollection<SmartTagActionSet> GetSmartTagActions(SnapshotSpan span)
@@ -182,11 +233,6 @@ namespace SpellChecker
         private void OnLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
             ITextSnapshot snapshot = e.NewSnapshot;
-
-            //var wpfTextView = (IWpfTextView)_view;
-            //var adornmentLayer = wpfTextView.GetAdornmentLayer("SmartTag");
-            //adornmentLayer.RemoveAdornmentsByTag("butRe");
-
             //don't do anything if this is just a change in case
             if (!snapshot.GetText().ToLower().Equals(e.OldSnapshot.GetText().ToLower()))
             {
