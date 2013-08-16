@@ -9,42 +9,6 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace ReSmartChecker.Providers
 {
-    //[Export(typeof(ISmartTagSourceProvider))]
-    //[Order(Before = Priority.Default)]
-    //[Name("Refactoring Smart Tag Source Provider")]
-    //internal class ReSmartTagSourceProvider : ISmartTagSourceProvider
-    //{
-    //    public ISmartTagSource TryCreateSmartTagSource(ITextBuffer textBuffer)
-    //    {
-    //        return new ReSmartTagSource();
-    //    }
-    //}
-
-    //internal class ReSmartTagSource : ISmartTagSource
-    //{
-    //    public void AugmentSmartTagSession(ISmartTagSession session, System.Collections.Generic.IList<SmartTagActionSet> smartTagActionSets)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-
-    //    public void Dispose()
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
-
-    [Export(typeof(IKeyProcessorProvider))]
-    //[ContentType("code")]
-    [Name("ReButtonMenuOpen")]
-    //[Order(Before = "VisualStudioKeyProcessor")]
-    internal class ReButtonProvider : IKeyProcessorProvider
-    {
-        public KeyProcessor GetAssociatedProcessor(IWpfTextView wpfTextView)
-        {
-            return new ReButtonKeyProc(wpfTextView);
-        }
-    }
-
     internal class ReButtonKeyProc : KeyProcessor
     {
         private ITextView textView;
@@ -58,14 +22,27 @@ namespace ReSmartChecker.Providers
 
         public override void KeyDown(KeyEventArgs args)
         {
-            if ((Keyboard.Modifiers & ModifierKeys.Alt) != 0 &&
-                args.Key == Key.Enter)
+            if (args.Key == Key.E && IsAlt)
             {
                 if (KeyDownEvent != null)
                 {
                     KeyDownEvent(this, args);
                 }
             }
+
+            //if (args.Key == Key.Q && (Keyboard.Modifiers & ModifierKeys.Alt) != 0)
+            //{
+            //    if (KeyDownEvent != null)
+            //    {
+            //        KeyDownEvent(this, args);
+            //    }
+            //}
+            //base.KeyDown(args);
+        }
+
+        public bool IsAlt
+        {
+            get { return Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt); }
         }
     }
 }
