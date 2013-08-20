@@ -22,22 +22,12 @@ namespace ReSmartChecker.Providers
 
         public override void KeyDown(KeyEventArgs args)
         {
-            if (args.Key == Key.E && IsAlt)
+            if (args.SystemKey == Key.E && (Keyboard.Modifiers & ModifierKeys.Alt) != 0)
             {
                 if (KeyDownEvent != null)
-                {
                     KeyDownEvent(this, args);
-                }
+                args.Handled = true;
             }
-
-            //if (args.Key == Key.Q && (Keyboard.Modifiers & ModifierKeys.Alt) != 0)
-            //{
-            //    if (KeyDownEvent != null)
-            //    {
-            //        KeyDownEvent(this, args);
-            //    }
-            //}
-            //base.KeyDown(args);
         }
 
         public bool IsAlt
