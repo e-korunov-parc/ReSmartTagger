@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using ReSmartChecker.Controls;
+using ReSmartChecker.Helpers;
 using ReSmartChecker.SmartTagActions;
 using SpellChecker.SmartTagActions;
 
@@ -136,7 +137,7 @@ namespace SpellChecker
                 else
                     yield break;
             }
-
+            RoslynHelper.Analiz(_buffer.CurrentSnapshot.GetText());
             UpdateAdornmentLayer();
             yield break;
         }

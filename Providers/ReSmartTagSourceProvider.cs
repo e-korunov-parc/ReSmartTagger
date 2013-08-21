@@ -1,11 +1,5 @@
-﻿using System;
-using System.ComponentModel.Composition;
-using System.Windows.Input;
-using Microsoft.VisualStudio.Language.Intellisense;
-using Microsoft.VisualStudio.Text;
-using Microsoft.VisualStudio.Text.Classification;
+﻿using System.Windows.Input;
 using Microsoft.VisualStudio.Text.Editor;
-using Microsoft.VisualStudio.Utilities;
 
 namespace ReSmartChecker.Providers
 {
@@ -22,7 +16,7 @@ namespace ReSmartChecker.Providers
 
         public override void KeyDown(KeyEventArgs args)
         {
-            if (args.SystemKey == Key.E && (Keyboard.Modifiers & ModifierKeys.Alt) != 0)
+            if (args.SystemKey == Key.E && IsAlt)
             {
                 if (KeyDownEvent != null)
                     KeyDownEvent(this, args);
@@ -32,7 +26,7 @@ namespace ReSmartChecker.Providers
 
         public bool IsAlt
         {
-            get { return Keyboard.IsKeyDown(Key.LeftAlt) || Keyboard.IsKeyDown(Key.RightAlt); }
+            get { return (Keyboard.Modifiers & ModifierKeys.Alt) != 0; }
         }
     }
 }
