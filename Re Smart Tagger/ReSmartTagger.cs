@@ -132,12 +132,15 @@ namespace SpellChecker
                             _span = null;
                             _smartTagActionSets = null;
                         }
+
+                        //RoslynHelper.ParseLine(span.Snapshot.GetLineFromPosition(_view.Caret.Position.BufferPosition.Position).GetText());
                     }
                 }
                 else
                     yield break;
             }
-            RoslynHelper.Analiz(_buffer.CurrentSnapshot.GetText());
+
+            //RoslynHelper.Analyze(_buffer.CurrentSnapshot.GetText());
             UpdateAdornmentLayer();
             yield break;
         }
