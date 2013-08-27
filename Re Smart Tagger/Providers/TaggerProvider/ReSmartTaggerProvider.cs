@@ -6,9 +6,8 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
-using ReSmartChecker.Providers;
 
-namespace SpellChecker
+namespace ReSmartChecker.Providers.TaggerProvider
 {
     [Export(typeof(IViewTaggerProvider))]
     [ContentType("csharp")]
@@ -19,16 +18,10 @@ namespace SpellChecker
         internal ITextStructureNavigatorSelectorService NavigatorService { get; set; }
 
         [Import]
-        public IClassificationTypeRegistryService Classification = null;
-
-        [Import]
         internal IClassifierAggregatorService AggregatorService = null;
 
         [Import]
         internal ISmartTagBroker SmartTagBroker { get; set; }
-
-        [Import]
-        internal IWpfKeyboardTrackingService KS { get; set; }
 
         public ITagger<T> CreateTagger<T>(ITextView textView, ITextBuffer buffer) where T : ITag
         {

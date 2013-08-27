@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Utilities;
-using ReSmartChecker.Providers;
 
-namespace ReSmartChecker
+namespace ReSmartChecker.Providers.InputProvider
 {
     [Export(typeof(IKeyProcessorProvider))]
     [TextViewRole(PredefinedTextViewRoles.Document)]

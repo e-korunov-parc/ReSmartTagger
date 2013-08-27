@@ -1,7 +1,7 @@
 ﻿using System.Windows.Input;
 using Microsoft.VisualStudio.Text.Editor;
 
-namespace ReSmartChecker.Providers
+namespace ReSmartChecker.Providers.InputProvider
 {
     internal class ReButtonKeyProc : KeyProcessor
     {

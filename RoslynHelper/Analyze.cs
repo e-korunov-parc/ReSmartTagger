@@ -7,7 +7,7 @@ namespace RoslynHelper
 {
     public class Analyze
     {
-        public static CodeInfo AnalyzeCode(string code)
+        public static CodeInfo AnalyzeCode(string code, int position = -1)
         {
             CodeInfo info = null;
             SyntaxTree tree = SyntaxTree.ParseText(code);
@@ -42,16 +42,18 @@ namespace RoslynHelper
             // Проходим по отальным чилдам и смотрим что там лежит
             foreach (var node in root.Members)
             {
-                if (node.Kind == SyntaxKind.DelegateDeclaration)
-                {
-                }
-
                 switch (node.Kind)
                 {
                     case SyntaxKind.FieldDeclaration:
                         break;
 
                     case SyntaxKind.PropertyDeclaration:
+
+                        if (position > 0)
+                        {
+                            var selectNode = node.DescendantTokens().FirstOrDefault(item => item.Span.IntersectsWith(position));
+                        }
+
                         break;
 
                     case SyntaxKind.DelegateDeclaration:
@@ -130,9 +132,9 @@ namespace RoslynHelper
             }
         }
 
-        public static void ParseLine(string line)
+        public static void ParseLine(string line, int position)
         {
-            AnalyzeCode(line);
+            AnalyzeCode(line, position);
         }
     }
 }

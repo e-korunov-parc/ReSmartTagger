@@ -11,11 +11,10 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using ReSmartChecker.Controls;
-using ReSmartChecker.Helpers;
 using ReSmartChecker.SmartTagActions;
 using SpellChecker.SmartTagActions;
 
-namespace SpellChecker
+namespace ReSmartChecker.Providers.TaggerProvider
 {
     internal class ReSmartTagger : ITagger<ReSmartTag>, IDisposable
     {
@@ -133,6 +132,24 @@ namespace SpellChecker
                             _smartTagActionSets = null;
                         }
 
+                        var line = span.Snapshot.GetLineFromPosition(_view.Caret.Position.BufferPosition.Position);
+                        var newSpan = new Span(0, line.Length);
+
+                        var sl = line.Start.Position; // 7
+                        var el = line.End.Position; // 9
+                        var p = _view.Caret.Position.BufferPosition.Position; // 8
+
+                        var cp = p - sl;
+
+                        /*
+                         * 12 all
+                         * 8 select
+                         * 2 select p
+                         * 7-9
+                         *
+                         */
+
+                        RoslynHelper.Analyze.ParseLine(line.GetText(), cp);
                         //RoslynHelper.ParseLine(span.Snapshot.GetLineFromPosition(_view.Caret.Position.BufferPosition.Position).GetText());
                     }
                 }

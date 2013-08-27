@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using Microsoft.VisualStudio.Language.Intellisense;
 
-namespace SpellChecker
+namespace ReSmartChecker.Providers.TaggerProvider
 {
     internal class ReSmartTag : SmartTag
     {
