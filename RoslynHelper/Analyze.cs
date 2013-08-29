@@ -132,9 +132,123 @@ namespace RoslynHelper
             }
         }
 
+        /// <summary>
+        /// Найти токен из кода по позиции
+        /// </summary>
+        public static SyntaxToken? FindToken(string code, int position)
+        {
+            SyntaxTree tree = SyntaxTree.ParseText(code);
+            CompilationUnitSyntax root = null;
+            SyntaxToken? token = null;
+
+            if (!tree.TryGetRoot(out root))
+            {
+                return token;
+            }
+
+            // Проходим по отальным чилдам и смотрим что там лежит
+            foreach (var node in root.Members)
+            {
+                switch (node.Kind)
+                {
+                    case SyntaxKind.FieldDeclaration:
+                        if (position > 0)
+                        {
+                            token = node.DescendantTokens().FirstOrDefault(item => item.Span.IntersectsWith(position));
+                        }
+                        break;
+
+                    case SyntaxKind.MethodDeclaration:
+
+                        // TODO: Сделать разбор параметров - MethodDeclarationSyntax
+
+                        if (position > 0)
+                        {
+                            var methodNode = node as MethodDeclarationSyntax;
+
+                            if (methodNode.ParameterList.DescendantTokens().Any(item => item.Span.IntersectsWith(position)))
+                            {
+                                token = methodNode.ParameterList.DescendantTokens().FirstOrDefault(item => item.Span.IntersectsWith(position));
+                            }
+                            else
+                            {
+                                if (methodNode.Identifier.Span.IntersectsWith(position))
+                                {
+                                    token = methodNode.Identifier;
+                                }
+                            }
+                        }
+                        break;
+
+                    case SyntaxKind.PropertyDeclaration:
+
+                        if (position > 0)
+                        {
+                            token = node.DescendantTokens().FirstOrDefault(item => item.Span.IntersectsWith(position));
+                        }
+
+                        break;
+
+                    case SyntaxKind.DelegateDeclaration:
+                        if (position > 0)
+                        {
+                            token = node.DescendantTokens().FirstOrDefault(item => item.Span.IntersectsWith(position));
+                        }
+                        break;
+                }
+            }
+
+            return token;
+        }
+
+        /// <summary>
+        /// Парсинг линии кода
+        /// </summary>
         public static void ParseLine(string line, int position)
         {
             AnalyzeCode(line, position);
+        }
+
+        /// <summary>
+        /// Асинхроный парсинг кода
+        /// </summary>
+        public static async void AsyncParse(string code)
+        {
+            SyntaxTree tree = SyntaxTree.ParseText(code);
+            CompilationUnitSyntax root = await tree.GetRootAsync();
+
+            //TODO: parse all
+        }
+
+        /// <summary>
+        /// Найти все похожие токены
+        /// </summary>
+        public static IEnumerable<SyntaxToken> FindAllTokens(SyntaxToken token, string code)
+        {
+            IEnumerable<SyntaxToken> tokens = null;
+
+            if (!string.IsNullOrEmpty(code))
+            {
+                SyntaxTree tree = SyntaxTree.ParseText(code);
+                tokens = FindAllTokens(token, tree);
+            }
+            return tokens;
+        }
+
+        /// <summary>
+        /// Найти все похожие токены
+        /// </summary>
+        public static IEnumerable<SyntaxToken> FindAllTokens(SyntaxToken token, SyntaxTree tree)
+        {
+            IEnumerable<SyntaxToken> tokens = null;
+            CompilationUnitSyntax root = null;
+
+            if (!tree.TryGetRoot(out root)) return tokens;
+
+            var dt = root.DescendantTokens();
+            if (dt != null && dt.Count() > 0 && dt.Any(item => item.Kind == token.Kind && item.ValueText == token.ValueText))
+                tokens = dt.Where(item => item.Kind == token.Kind && item.ValueText == token.ValueText);
+            return tokens;
         }
     }
 }

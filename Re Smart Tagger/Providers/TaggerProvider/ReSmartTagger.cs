@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -12,6 +13,7 @@ using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using ReSmartChecker.Controls;
 using ReSmartChecker.SmartTagActions;
+using Roslyn.Compilers.CSharp;
 using SpellChecker.SmartTagActions;
 
 namespace ReSmartChecker.Providers.TaggerProvider
@@ -105,52 +107,44 @@ namespace ReSmartChecker.Providers.TaggerProvider
                         SnapshotPoint point;
 
                         if (caret.Position.BufferPosition > 0)
-                            //point = caret.Position.BufferPosition - 1;
                             point = caret.Position.BufferPosition;
                         else
                             yield break;
 
-                        var groupClassifications = listClassifier.GroupBy(item => item.ClassificationType.Classification,
-                                                                                  item => item.Span.GetText(),
-                                                                                  (key, type) => new KeyValuePair<string, IEnumerable<string>>(key, type));
+                        /*
+                         * Парсим линию на которой стот курсор
+                         */
 
-                        var targetSpan = listClassifier.FirstOrDefault(item => item.Span.Start <= point.Position
-                                                                               && item.Span.End >= point.Position
-                                                                               && (item.ClassificationType.Classification == "identifier"
-                                                                               && !groupClassifications.Any(i => i.Key == "keyword" && i.Value.Any(a => a == item.Span.GetText()))));
-                        //if (targetSpan != null)
-                        //    yield return new TagSpan<ReSmartTag>(targetSpan.Span, new ReSmartTag(GetSmartTagActions(targetSpan.Span)));
-                        //else yield break;
-                        if (targetSpan != null)
+                        Stopwatch timer = new Stopwatch();
+                        timer.Start();
+                        var line = span.Snapshot.GetLineFromPosition(_view.Caret.Position.BufferPosition.Position);
+
+                        var positionOnLine = point.Position - line.Start.Position;
+
+                        var token = RoslynHelper.Analyze.FindToken(line.GetText(), positionOnLine);
+                        if (token.HasValue && token.Value.Kind == Roslyn.Compilers.CSharp.SyntaxKind.IdentifierToken)
                         {
-                            _span = targetSpan.Span;
-                            _smartTagActionSets = GetSmartTagActions(_span.Value);
+                            TextExtent extent = navigator.GetExtentOfWord(point);
+                            var tokens = RoslynHelper.Analyze.FindAllTokens(token.Value, span.GetText());
+                            if (tokens != null && tokens.Any())
+                            {
+                                // TODO: Найти все токены и вставить в рефакторинг
+                                List<TextExtent> sssss = new List<TextExtent>();
+                                foreach (var t in tokens)
+                                {
+                                    //sssss.Add(navigator.GetExtentOfWord( t.Span.End - 1));
+                                }
+                            }
+                            _span = extent.Span;
+                            _smartTagActionSets = GetSmartTagActions(_span.Value, tokens);
                         }
                         else
                         {
                             _span = null;
                             _smartTagActionSets = null;
                         }
-
-                        var line = span.Snapshot.GetLineFromPosition(_view.Caret.Position.BufferPosition.Position);
-                        var newSpan = new Span(0, line.Length);
-
-                        var sl = line.Start.Position; // 7
-                        var el = line.End.Position; // 9
-                        var p = _view.Caret.Position.BufferPosition.Position; // 8
-
-                        var cp = p - sl;
-
-                        /*
-                         * 12 all
-                         * 8 select
-                         * 2 select p
-                         * 7-9
-                         *
-                         */
-
-                        RoslynHelper.Analyze.ParseLine(line.GetText(), cp);
-                        //RoslynHelper.ParseLine(span.Snapshot.GetLineFromPosition(_view.Caret.Position.BufferPosition.Position).GetText());
+                        timer.Stop();
+                        Debug.WriteLine("Time executing {0}", timer.ElapsedMilliseconds);
                     }
                 }
                 else
@@ -196,9 +190,8 @@ namespace ReSmartChecker.Providers.TaggerProvider
                 //adornmentLayer.RemoveAllAdornments();
                 if (_span != null)
                 {
-                    var visualSpan = _span;
                     HideSmartTags(view);
-                    adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, visualSpan, _reButtonMenu.TAG_BUTTON, _reButtonMenu, null);
+                    adornmentLayer.AddAdornment(AdornmentPositioningBehavior.TextRelative, _span, _reButtonMenu.TAG_BUTTON, _reButtonMenu, null);
                 }
             }
             else
@@ -236,7 +229,7 @@ namespace ReSmartChecker.Providers.TaggerProvider
             }
         }
 
-        private ReadOnlyCollection<SmartTagActionSet> GetSmartTagActions(SnapshotSpan span)
+        private ReadOnlyCollection<SmartTagActionSet> GetSmartTagActions(SnapshotSpan span, IEnumerable<SyntaxToken> tokens)
         {
             List<SmartTagActionSet> actionSetList = new List<SmartTagActionSet>();
             List<ISmartTagAction> actionList = new List<ISmartTagAction>();
