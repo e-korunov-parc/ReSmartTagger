@@ -19,6 +19,7 @@ namespace ReSmartChecker
 
         public KeyProcessor GetAssociatedProcessor(IWpfTextView wpfTextView)
         {
+            // TODO : нужно что-то
             return new ReButtonKeyProc(wpfTextView);
         }
     }
